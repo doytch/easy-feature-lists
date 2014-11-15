@@ -1,0 +1,17 @@
+.efl-group-table,
+.efl-group-table tr,
+.efl-group-table td,
+.efl-feature-list-table table {
+	border: 0;
+	margin: 0;
+}
+
+.efl-cell-wide-1 { width: 100%; }
+.efl-cell-wide-2 { width: 50%; }
+.efl-cell-wide-3 { width: 33.33%; }
+.efl-cell-wide-4 { width: 25%; }
+.efl-cell-wide-5 { width: 20%; }
+.efl-cell-wide-6 { width: 16.66%; }
+.efl-cell-wide-7 { width: 14.28%; }
+.efl-cell-wide-8 { width: 12.5%; }
+.efl-cell-wide-9 { width: 11.1%; }
