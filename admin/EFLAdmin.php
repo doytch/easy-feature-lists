@@ -60,11 +60,6 @@ class EFLAdmin {
 	 *
 	 */
 	public function enqueue_scripts($hook) {
-		if ($hook == 'post.php' || $hook == 'post-new.php') {
-			wp_enqueue_script( $this->name, plugin_dir_url( __FILE__ ) . 'js/admin.js', array( 'jquery' ), null, false );
-			$protocol = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
-			wp_localize_script($this->name, 'EFL_AJAX_URL', admin_url('admin-ajax.php', $protocol));
-		}
 	}
 
 }

@@ -8,7 +8,7 @@
  * Plugin Name:       Easy Feature Lists
  * Plugin URI:        http://wordpress.org/plugins/easy-feature-lists
  * Description:       Easily create checklists of features in your posts and pages.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Mark Hurst Deutsch
  * Author URI:        http://qedev.com/
  * License:           GPL-2.0+

@@ -68,8 +68,8 @@ class EFLPostMetabox {
 		$post = intval($_POST['post_id']);
 		$list = intval($_POST['feature_list_id']);
 		$ret = array(
-			'markup' => get_post_meta($list, 'efl-list-markup', true),
-			'checklist' => get_post_meta($post, 'efl-list-checklist', true)
+			'features' => get_post_meta($list, 'efl-list-features', true),
+			'values' => get_post_meta($post, 'efl-list-values', true)
 		);
 		echo json_encode($ret);
 		die();
@@ -81,7 +81,12 @@ class EFLPostMetabox {
 	 */
 	public function create_metabox($post) {
 		wp_nonce_field('efl_post_mb', 'efl_post_mb_nonce');
-		include_once(plugin_dir_path( dirname(dirname( __FILE__ )) ) . 'admin/partials/post-metabox.php');
+		include_once(plugin_dir_path( dirname( __FILE__ ) ) . '/partials/post-metabox.php');
+
+		wp_enqueue_script( 'post-metabox', plugin_dir_url( dirname(__FILE__) ) . 'js/post-metabox.js', array( 'jquery' ), null, false );
+		$protocol = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+		wp_localize_script('post-metabox', 'EFL_AJAX_URL', admin_url('admin-ajax.php', $protocol));
+
 	}
 
 	/**
@@ -104,19 +109,30 @@ class EFLPostMetabox {
 			update_post_meta($post_id, "efl-list-sel", intval($_POST['efl-list-sel']));
 		}
 
-		if (isset($_POST['efl-chk'])) {
-			$group_num = 0;
-			$feature_num = 0;
-			$checklist = '';
-			foreach($_POST['efl-chk'] as $group_idx => $group) {
-				foreach ($group as $feature_idx => $feature) {	
-					$checklist .= "{$group_idx}-{$feature_idx},";
-					$feature_num += 1;
+		if (isset($_POST['efl-feature'])) {
+			$values = array();
+			foreach($_POST['efl-feature'] as $group_idx => $group) {
+				foreach ($group as $feature_idx => $value) {	
+					$values[$group_idx][$feature_idx] = wp_strip_all_tags($value);
 				}
-				$feature_num = 0;
-				$group_num += 1;
 			}
-			update_post_meta($post_id, "efl-list-checklist", $checklist);
+
+			// Fill out the array for JSON encoding.
+			for ($i = 0; $i < max(array_keys($values)); $i++) {
+				if (! isset($values[$i])) {
+					// Fill the undefined group.
+					$values[$i] = array( array('') );
+				} else {
+					for ($j = 0; $j < max(array_keys($values[$i])); $j++) {
+						if (! isset($values[$i][$j])) {
+							// Fill the undefined feature value.
+							$values[$i][$j] = '';
+						}
+					}
+				}
+			}
+
+			update_post_meta($post_id, "efl-list-values", json_encode($values));
 		}
 	}
 }

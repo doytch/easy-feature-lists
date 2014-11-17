@@ -11,11 +11,11 @@
  */
 class EFLTableGenerator {
 	/**
-	 * Raw checklist info of the feature list
+	 * Values of the feature list
 	 *
 	 * @access   private
 	 */
-	private $checklist;
+	private $values;
 
 	/**
 	 * The width of each feature cell as a percentage of table width.
@@ -57,45 +57,27 @@ class EFLTableGenerator {
 	 * @return 	array, boolean 					Array of the structure if no errors, else false.
 	 */
 	private function create_structure($post_id, $list_id) {
-		$markup = get_post_meta($list_id, 'efl-list-markup', true);
-		$this->checklist = get_post_meta($post_id, 'efl-list-checklist', true);
-		if ($markup == null || $markup == ""   || $this->checklist == null || $this->checklist == "" ) {
+		$features = get_post_meta($list_id, 'efl-list-features', true);
+		$values = get_post_meta($post_id, 'efl-list-values', true);
+
+		if ($features == null || $features == ""   || $values == null || $values == "" ) {
 			return false;
 		}
 
+		$features = json_decode($features, true);
+		$values = json_decode($values, true);
+
 		// Each line is of form "Feature Group: Feature 1, Feature 2, Feature 3".
-		$structure = array();
- 		foreach (explode("\n", $markup) as $group_id => $group_markup) {
- 			// Split each line into the group name and the features.
- 			$tmp = explode(":", $group_markup);
- 			if (count($tmp) != 2) {
- 				return false;
+ 		foreach ($features as $group_id => $group) {
+ 			$group_id = intval($group_id);
+ 			foreach ($features[$group_id]['features'] as $feature_id => $feature) {
+ 				$feature_id = intval($feature_id);
+ 				// Merge the value data into the feature list structure array.
+ 				$features[$group_id]['features'][$feature_id]['value'] = $values[$group_id][$feature_id];
  			}
- 			
- 			$group = array();
- 			foreach (explode(",", $tmp[1]) as $feature_id => $feature_markup) {
- 				// Construct an array for each feature and add it to the group array.
- 				$group[] = array(
- 					'id' => "{$group_id}-{$feature_id}",
- 					'name' => trim($feature_markup),
- 					'checked' => $this->feature_is_checked($group_id, $feature_id)
-				);
- 			}
- 			$structure[trim($tmp[0])] = $group;
  		}
 
- 		return $structure;
-	}
-
-	/**
-	 * Creates a table that contains the feature list w/ appropriate items checked.
-	 *
-	 * @var     string 		$group_id 			The ID of the group the feature's in.
-	 * @var     string 		$feature_id			The ID of the feature itself.
-	 * @return 	boolean 						True/false whether the feature is checked.
-	 */
-	private function feature_is_checked($group_id, $feature_id) {
-		return strpos($this->checklist, "{$group_id}-{$feature_id}") !== false;
+ 		return $features;
 	}
 
 	/**
@@ -107,10 +89,10 @@ class EFLTableGenerator {
 	private function create_table($structure) {
 		$output = "<table class='efl-feature-list-table'>";
 
-		foreach ($structure as $group_name => $features) {
+		foreach ($structure as $group) {
 			$output .= "<tr>";
-			$output .= $this->create_group_name_cell($group_name);
-			$output .= $this->create_group_features_cell($features);
+			$output .= $this->create_group_name_cell($group['name']);
+			$output .= $this->create_group_features_cell($group['features']);
 			$output .= "</tr>";
 		}
 
@@ -175,12 +157,16 @@ class EFLTableGenerator {
 	 */
 	private function create_feature_cell($feature) {
 		$output  = "<td class='efl-feature-cell efl-cell-wide-" . $this->max_col . "'>";
-		$output .= "<input class='efl-feature-checkbox' disabled=true type='checkbox' ";
-		$output .= "id='efl-chk-" . $feature['id'] . "'";
-		$output .= $feature['checked'] ? ' checked ' : ' ';
-		$output .= "/>";
-		$output .= "<label for='efl-chk-" . $feature['id'] . "'>";
-		$output .= "&nbsp;" . $feature['name'] . "</label></td>";
+		$output .= "<label class='efl-feature-name-label'>" . $feature['name'] . "</label></td>";
+		$output .= "<td class='efl-feature-cell efl-cell-wide-" . $this->max_col . "'>";
+
+		if ($feature['type'] == 'Text') {
+			$output .= "<span class='efl-feature-text'>" . $feature['value'] . "</span>";
+		} else if ($feature['type'] == 'Checkbox') {
+			$output .= "<input disabled=true class='efl-feature-check' type='checkbox' " . $feature['value'] . "/>";
+		}
+
+		$output .= "</td>";
 		return $output;
 	}
 }

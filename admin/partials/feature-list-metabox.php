@@ -9,14 +9,11 @@
  */
 ?>
 
-<table class='form-table'>
+<table id='efl-list-table' class='form-table'>
 	<tr valign='top'>
-		<th scope='row'><label><?php _e('Feature List Markup', $this->name); ?></label></th>
-		<?php $list = get_post_meta(get_the_ID(), 'efl-list-markup', true); ?>
-		<td><textarea id='efl-list-markup' name='efl-list-markup' cols='70' rows='10'><?php echo $list; ?></textarea></td>
-	</tr>
-	<tr valign='top'>
-		<th scope='row'><label><?php _e('Features Per Row', $this->name); ?></label></th>
+		<th scope='row'>
+			<label><?php _e('Features Per Row', $this->name); ?></label>
+		</th>
 		<?php $cols = get_post_meta(get_the_ID(), 'efl-list-cols', true); ?>
 		<td>
 			<select id='efl-list-cols' name='efl-list-cols'>
@@ -32,5 +29,10 @@
 			</select><br/>
 			<p><?php _e('The number of features in a group to list on the same row. Your page width and length of feature names determines a good number.', $this->name); ?></p>
 		</td>
+	</tr>
+	<tr valign='top'>
+		<th scope='row'>
+			<button id='efl-add-feature-group-btn'><?php _e('Add Feature Group', $this->name); ?></button>
+		</th>
 	</tr>
 </table>

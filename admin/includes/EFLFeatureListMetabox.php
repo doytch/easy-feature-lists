@@ -61,7 +61,12 @@ class EFLFeatureListMetabox {
 	 */
 	public function create_metabox($post) {
 		wp_nonce_field('efl_fl_mb', 'efl_fl_mb_nonce');
-		include_once(plugin_dir_path( dirname(dirname( __FILE__ )) ) . 'admin/partials/feature-list-metabox.php');
+		include_once(plugin_dir_path( dirname( __FILE__ ) ) . '/partials/feature-list-metabox.php');
+		
+		wp_enqueue_style(  'feature-list-metabox', plugin_dir_url( dirname(__FILE__) ) . 'css/feature-list-metabox.css');
+
+		wp_enqueue_script( 'feature-list-metabox', plugin_dir_url( dirname(__FILE__) ) . 'js/feature-list-metabox.js', array( 'jquery' ), null, false );
+		wp_localize_script('feature-list-metabox', 'EFL_LIST_JSON', get_post_meta($post->ID, 'efl-list-features', true));		
 	}
 
 	/**
@@ -80,11 +85,35 @@ class EFLFeatureListMetabox {
 			return $post_id;
 		}
 
-		if (isset($_POST['efl-list-markup'])) {
-			update_post_meta($post_id, 'efl-list-markup', wp_strip_all_tags($_POST['efl-list-markup']));
-		}
+
 		if (isset($_POST['efl-list-cols'])) {
 			update_post_meta($post_id, 'efl-list-cols', intval($_POST['efl-list-cols']));
+		}
+
+		if (isset($_POST['efl-group-name']) && isset($_POST['efl-feature-name']) && isset($_POST['efl-feature-type'])) {
+			$groups = array();
+			foreach ($_POST['efl-group-name'] as $group_id => $group_name) {
+				if (! isset($_POST['efl-feature-name'][$group_id])) {
+					continue;
+				}
+
+				$group = array(
+					'name' 		=> wp_strip_all_tags($group_name),
+					'features' 	=> array()
+				);
+
+				foreach ($_POST['efl-feature-name'][$group_id] as $feature_id => $feature_name) {
+					$feature = array(
+						'name' 	=> $_POST['efl-feature-name'][$group_id][$feature_id],
+						'type' 	=> $_POST['efl-feature-type'][$group_id][$feature_id]
+					);
+
+					$group['features'][] = $feature;
+				}
+
+				$groups[] = $group;
+			}
+			update_post_meta($post_id, 'efl-list-features', json_encode($groups));
 		}
 	}
 }
