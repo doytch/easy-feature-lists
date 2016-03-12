@@ -3,7 +3,7 @@ Contributors: doytch
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=mark%2edeutsch%40utoronto%2eca&lc=US&item_name=Coffee%20Donation%20%3d%29&amount=10%2e00&currency_code=USD&button_subtype=services&bn=PP%2dBuyNowBF%3abtn_buynowCC_LG%2egif%3aNonHosted
 Tags: feature list, features, check list, list, shortcode, table
 Requires at least: 3.9
-Tested up to: 4.0
+Tested up to: 4.5
 Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Create reusable feature or check lists that you can add to any post or page.
 == Description ==
 
 Create reusable feature or check lists that you can add to any post or page. Great for houses, hotels, cars, products,
-and anytime you want to display a set of items that each have a subset of a group of features. 
+and anytime you want to display a set of items that each have a subset of a group of features.
 
 Simply:
 
@@ -30,7 +30,7 @@ and custom development via my company as well. Email me at admin@qedev.com with 
 
 You don't really need to do anything special to install this plugin. Just:
 
-1. Download using the button above, unzip and place the folder in your wp-content/plugins/ folder. Alternately, 
+1. Download using the button above, unzip and place the folder in your wp-content/plugins/ folder. Alternately,
 install using Wordpress' built-in plugin installer.
 1. Activate the plugin through the Plugins menu in WordPress
 1. Follow the instructions in the Description tab to add, insert, and configure feature lists.
